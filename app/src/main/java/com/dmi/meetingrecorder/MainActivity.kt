@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             listening = true
             Toast.makeText(this@MainActivity, "Listening....Click to Stop", Toast.LENGTH_LONG).show()
 
+
         } else {
             try {
                 microphoneHelper?.closeInputStream()

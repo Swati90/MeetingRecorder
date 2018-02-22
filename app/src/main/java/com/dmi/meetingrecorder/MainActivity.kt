@@ -1,5 +1,6 @@
 package com.dmi.meetingrecorder
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DialogTitle
@@ -51,7 +52,8 @@ class MainActivity : AppCompatActivity() {
         microphoneHelper = MicrophoneHelper(this)
 
         fab.setOnClickListener { view ->
-            recordMessage()
+            // recordMessage()
+            startActivity(Intent(this, AudioRecorderActivity::class.java))
         }
     }
 
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                 var dialogConversation = DialogConversation()
                 dialogConversation.dialog = text
                 dialogConversationList.add(dialogConversation)
-                runOnUiThread(Runnable {  dialogAdapter.notifyDataSetChanged() })
+                runOnUiThread(Runnable { dialogAdapter.notifyDataSetChanged() })
             }
         }
 

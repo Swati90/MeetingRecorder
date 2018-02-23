@@ -10,6 +10,9 @@ import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import kotlinx.android.synthetic.main.activity_recorder.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
 import java.io.InputStream
 
 /**
@@ -17,6 +20,8 @@ import java.io.InputStream
  * @author Ankit jindal
  */
 class AudioRecorderActivity : AppCompatActivity() {
+
+    lateinit var mSimpleSpkDetection: SimpleSpkDetSystem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +52,11 @@ class AudioRecorderActivity : AppCompatActivity() {
                     System.out.println("File Name Retrieved: " + data?.data)
                     val uri: Uri = data?.data!!
                     System.out.print("Audio file: " + uri.path)
+                    mSimpleSpkDetection.addAudio(Util.getByteArrayFromUri(data))
+                    mSimpleSpkDetection.createSpeakerModel("Ankit")
+                    System.out.println("System status:");
+                    System.out.println("  # of features: " + mSimpleSpkDetection.featureCount())  // at this point, 0
+                    System.out.println("  # of models: " + mSimpleSpkDetection.speakerCount())
                 }
             }
         }
@@ -54,17 +64,18 @@ class AudioRecorderActivity : AppCompatActivity() {
 
 
     private fun initialiseAliZe() {
-        val inputStream: InputStream = getApplicationContext().getAssets().open("MeetingRecorderConfig.cfg")
-        val sinmpleSpeakerDetectionSystem = SimpleSpkDetSystem(inputStream, getApplicationContext().getFilesDir().getPath())
+        val inputStream: InputStream = getApplicationContext().getAssets().open("MeetingRecorder.cfg")
+        mSimpleSpkDetection = SimpleSpkDetSystem(inputStream, getApplicationContext().getFilesDir().getPath())
         inputStream.close()
 
-        val backgroundModelAsset: InputStream = getApplicationContext().getAssets().open("gmm/world.gmm")
-        sinmpleSpeakerDetectionSystem.loadBackgroundModel(backgroundModelAsset)
+        val backgroundModelAsset: InputStream = getApplicationContext().getAssets().open("world.gmm")
+        mSimpleSpkDetection.loadBackgroundModel(backgroundModelAsset)
         backgroundModelAsset.close()
 
         System.out.println("System status:");
-        System.out.println("  # of features: " + sinmpleSpeakerDetectionSystem.featureCount())  // at this point, 0
-        System.out.println("  # of models: " + sinmpleSpeakerDetectionSystem.speakerCount())   // at this point, 0
-        System.out.println("  UBM is loaded: " + sinmpleSpeakerDetectionSystem.isUBMLoaded())    // true
+        System.out.println("  # of features: " + mSimpleSpkDetection.featureCount())  // at this point, 0
+        System.out.println("  # of models: " + mSimpleSpkDetection.speakerCount())   // at this point, 0
+        System.out.println("  UBM is loaded: " + mSimpleSpkDetection.isUBMLoaded())    // true
     }
 }
+
